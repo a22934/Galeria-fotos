@@ -170,6 +170,9 @@
 @media (max-width: 768px) {
   .camera-modal {
     padding: 1rem;
+    /* Ajuste para mobile: Garante que o modal ocupa mais espaço do ecrã */
+    width: calc(100% - 20px); 
+    max-width: 100%;
   }
 
   .camera-modal-title {
@@ -182,5 +185,11 @@
 
   .camera-btn-cancel {
     flex: 1;
+  }
+  
+  /* Garantir que os botões Capture/Upload ocupam a largura total em mobile */
+  .camera-btn {
+    flex: none; 
+    width: 100%;
   }
 }
