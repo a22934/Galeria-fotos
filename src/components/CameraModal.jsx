@@ -5,101 +5,97 @@ import './CameraModal.css';
 export default function CameraModal({ onPhotoAccepted, onClose }) {
   const [capturedPhoto, setCapturedPhoto] = useState(null);
   const [stream, setStream] = useState(null);
-  const [isCameraActive, setIsCameraActive] = useState(false);
-  
+  const [isCameraAvailable, setIsCameraAvailable] = useState(false);
+
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const fileInputRef = useRef(null);
 
-  // Efeito para iniciar e limpar a câmara
-  useEffect(() => {
-    // Só inicia a câmara se não houver foto capturada e o modo câmara estiver ativo
-    if (!capturedPhoto) {
-        startCamera();
-    }
-    
-    return () => {
-      stopCamera();
-    };
-  }, [capturedPhoto]); // Recarrega se capturedPhoto for limpo
+  // ===============================================
+  // Funções de Stream
+  // ===============================================
+  const startCamera = async () => {
+    try {
+      // Para qualquer stream antigo
+      if (stream) stopCamera();
 
-  const startCamera = () => {
-    // Evita iniciar a câmara se já estiver a correr ou se o utilizador acabou de carregar uma foto
-    if (isCameraActive || capturedPhoto) return; 
-
-    navigator.mediaDevices.getUserMedia({ 
-      video: { 
-        facingMode: 'user',
-        width: { ideal: 1280 },
-        height: { ideal: 720 }
-      } 
-    })
-      .then(mediaStream => {
-        setStream(mediaStream);
-        if (videoRef.current) {
-          videoRef.current.srcObject = mediaStream;
-        }
-        setIsCameraActive(true);
-      })
-      .catch(err => {
-        console.error("Erro ao aceder à câmara:", err);
-        // Em vez de alert(), usamos console.error e não fechamos, permitindo o file upload
-        // alert("Não foi possível aceder à câmara. Verifica as permissões."); 
-        setIsCameraActive(false);
+      setIsCameraAvailable(true);
+      const mediaStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
       });
+
+      setStream(mediaStream);
+
+      if (videoRef.current) {
+        videoRef.current.srcObject = mediaStream;
+        await videoRef.current.play();
+      }
+    } catch (err) {
+      console.error('Erro ao aceder à câmara:', err);
+      setIsCameraAvailable(false);
+      setStream(null);
+    }
   };
-  
+
   const stopCamera = () => {
     if (stream) {
       stream.getTracks().forEach(track => track.stop());
     }
-    setIsCameraActive(false);
+    setStream(null);
   };
-  
-  // ===============================================
-  // Lógica de Carregamento de Ficheiros
-  // ===============================================
 
+  // ===============================================
+  // useEffect para iniciar a câmera quando abrir o modal
+  // ===============================================
+  useEffect(() => {
+    if (!capturedPhoto) {
+      startCamera();
+    }
+    return () => stopCamera();
+  }, [capturedPhoto]);
+
+  // ===============================================
+  // Upload de arquivo
+  // ===============================================
   const handleFileSelect = (event) => {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        stopCamera(); // Parar a câmara se estiver a funcionar
-        setCapturedPhoto(e.target.result); // Define a foto carregada
+        stopCamera();
+        setCapturedPhoto(e.target.result);
       };
       reader.readAsDataURL(file);
     }
+    event.target.value = null; // limpa input
   };
 
   const triggerFileUpload = () => {
+    stopCamera();
     fileInputRef.current.click();
   };
 
   // ===============================================
-  // Lógica de Captura/Ação
+  // Captura / Retake / Aceitar
   // ===============================================
-
   const capturePhoto = () => {
+    if (!videoRef.current || !canvasRef.current) return;
+
     const canvas = canvasRef.current;
-    const video = videoRef.current;
-    
-    if (canvas && video) {
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      const ctx = canvas.getContext('2d');
-      // Desenhar o vídeo para o canvas para obter o frame
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const photoData = canvas.toDataURL('image/jpeg', 0.95);
-      
-      stopCamera(); // Parar a câmara após a captura
-      setCapturedPhoto(photoData);
-    }
+    canvas.width = videoRef.current.videoWidth;
+    canvas.height = videoRef.current.videoHeight;
+
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+
+    const photoData = canvas.toDataURL('image/jpeg', 0.95);
+    stopCamera();
+    setCapturedPhoto(photoData);
   };
 
-  const retakePhoto = () => {
+  const retakePhoto = async () => {
     setCapturedPhoto(null);
-    // startCamera é chamado automaticamente via useEffect
+    await startCamera(); // reinicia a câmera
   };
 
   const acceptPhoto = () => {
@@ -112,34 +108,36 @@ export default function CameraModal({ onPhotoAccepted, onClose }) {
     onClose();
   };
 
+  const isCameraOpenForCapture = stream && !capturedPhoto;
+
+  // ===============================================
+  // Render
+  // ===============================================
   return (
     <div className="camera-modal-overlay" onClick={handleClose}>
-      <div className="camera-modal" onClick={(e) => e.stopPropagation()}>
+      <div className="camera-modal" onClick={e => e.stopPropagation()}>
         <h2 className="camera-modal-title">
           {capturedPhoto ? 'Vê a tua foto!' : 'Seleciona ou Tira uma Foto'}
         </h2>
-        
+
         <div className="camera-preview">
-          
-          {/* Pré-visualização da câmara (apenas se a câmara estiver ativa e sem foto) */}
-          {isCameraActive && !capturedPhoto ? (
+          {isCameraOpenForCapture ? (
             <video
               ref={videoRef}
               autoPlay
               playsInline
               className="camera-video"
+              muted
             />
           ) : capturedPhoto ? (
-            /* Imagem capturada ou carregada */
-            <img 
-              src={capturedPhoto} 
-              alt="Foto capturada ou carregada"
-              className="camera-image"
-            />
+            <img src={capturedPhoto} alt="Foto capturada ou carregada" className="camera-image" />
           ) : (
-            /* Placeholder se a câmara não puder iniciar */
             <div className="camera-placeholder">
-                <p>Não foi possível iniciar a câmara. Use a opção de Carregar Foto.</p>
+              <p>
+                {isCameraAvailable
+                  ? 'A iniciar câmara...'
+                  : 'Não foi possível iniciar a câmara. Verifica as permissões ou usa a opção de Carregar Foto.'}
+              </p>
             </div>
           )}
         </div>
@@ -149,51 +147,36 @@ export default function CameraModal({ onPhotoAccepted, onClose }) {
         <div className="camera-buttons">
           {!capturedPhoto ? (
             <>
-              {/* Botão de Captura (Visível se a câmara estiver ativa) */}
-              {isCameraActive && (
-                <button
-                  onClick={capturePhoto}
-                  className="camera-btn camera-btn-capture"
-                >
+              {isCameraOpenForCapture && (
+                <button onClick={capturePhoto} className="camera-btn camera-btn-capture">
                   <Camera size={20} /> Tirar Foto
                 </button>
               )}
-              
-              {/* Botão de Carregar Foto */}
-              <input 
-                type="file" 
-                accept="image/*" 
-                ref={fileInputRef} 
-                onChange={handleFileSelect} 
-                className="file-input-hidden" 
+
+              <input
+                type="file"
+                accept="image/*"
+                ref={fileInputRef}
+                onChange={handleFileSelect}
+                className="file-input-hidden"
               />
               <button
                 onClick={triggerFileUpload}
-                className={`camera-btn camera-btn-upload ${!isCameraActive ? 'w-full' : ''}`}
+                className={`camera-btn camera-btn-upload ${!isCameraOpenForCapture && isCameraAvailable ? 'w-full' : ''}`}
               >
                 <Upload size={20} /> Carregar da Galeria
               </button>
-              
-              <button
-                onClick={handleClose}
-                className="camera-btn camera-btn-cancel"
-              >
+
+              <button onClick={handleClose} className="camera-btn camera-btn-cancel">
                 <X size={20} /> Cancelar
               </button>
             </>
           ) : (
             <>
-              {/* Botões Após Captura/Carregamento */}
-              <button
-                onClick={acceptPhoto}
-                className="camera-btn camera-btn-accept"
-              >
+              <button onClick={acceptPhoto} className="camera-btn camera-btn-accept">
                 <Check size={20} /> Aceitar e Enviar
               </button>
-              <button
-                onClick={retakePhoto}
-                className="camera-btn camera-btn-retake"
-              >
+              <button onClick={retakePhoto} className="camera-btn camera-btn-retake">
                 <RotateCcw size={20} /> Tirar/Carregar Novamente
               </button>
             </>
