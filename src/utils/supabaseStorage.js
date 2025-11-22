@@ -132,3 +132,33 @@ export const uploadPhoto = async (photoData, fileName) => {
     return null;
   }
 };
+/**
+ * Subscreve a alterações em tempo real (Realtime) na linha principal da galeria.
+ * @param {function(Array<string|null>): void} callback - Função para atualizar o estado local.
+ * @returns {object} - O canal de subscrição do Supabase.
+ */
+export const subscribeToGalleryUpdates = (callback) => {
+    // Escutamos o evento 'UPDATE' porque o upload de uma nova foto 
+    // resulta numa atualização da única linha da grelha na base de dados.
+    const channel = supabase
+        .channel('main_gallery_channel') // Nome único para o canal
+        .on(
+            'postgres_changes',
+            {
+                event: 'UPDATE',
+                schema: 'public',
+                table: TABLE_NAME,
+                // Filtra apenas a linha que contém o array completo da grelha
+                filter: `id=eq.${GALLERY_ID}` 
+            },
+            (payload) => {
+                // O payload.new.photos contém o array completo e atualizado de 15 URLs.
+                if (payload.new && Array.isArray(payload.new.photos)) {
+                    callback(payload.new.photos);
+                }
+            }
+        )
+        .subscribe();
+    
+    return channel;
+};

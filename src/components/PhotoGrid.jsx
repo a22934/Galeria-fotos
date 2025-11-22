@@ -2,7 +2,13 @@ import React, { useState, useRef, useEffect } from 'react';
 import { RotateCcw, Download } from 'lucide-react';
 import CameraModal from './CameraModal';
 import { downloadImage, captureElementToDataUrl } from '../utils/imageUtils'; 
-import { uploadPhoto, loadGalleryState, saveGalleryState } from '../utils/supabaseStorage';
+// A função subscribeToGalleryUpdates foi adicionada aqui
+import { 
+    uploadPhoto, 
+    loadGalleryState, 
+    saveGalleryState,
+    subscribeToGalleryUpdates 
+} from '../utils/supabaseStorage';
 import './PhotoGrid.css';
 
 // Tamanho fixo da grelha
@@ -20,93 +26,113 @@ export default function PhotoGrid() {
   const gridRef = useRef(null); 
 
   // =========================================================
-  // LÓGICA DE PERSISTÊNCIA (Supabase Database)
+  // LÓGICA DE PERSISTÊNCIA E REALTIME (Supabase Database)
   // =========================================================
-  // 1. Carregar ao Iniciar
+  
   useEffect(() => {
+    // 1. FUNÇÃO PARA CARREGAR O ESTADO INICIAL
     const loadState = async () => {
       setIsLoading(true);
-      const savedPhotos = await loadGalleryState();
+      const savedPhotos = await loadGalleryState(); //
       
       if (savedPhotos && Array.isArray(savedPhotos) && savedPhotos.length === GRID_SIZE) {
-        setPhotos(savedPhotos);
+        setPhotos(savedPhotos); //
       } else {
-        // Se não houver dados ou estiverem incompletos, inicializa vazio
+        // Se não houver dados ou estiverem incompletos, inicializa vazio //
         setPhotos(Array(GRID_SIZE).fill(null)); 
       }
       setIsLoading(false);
     };
-    loadState();
-  }, []);
+    loadState(); //
 
-  // 2. Salvar sempre que 'photos' muda (após upload ou reset)
+    // 2. FUNÇÃO DE CALLBACK PARA O REALTIME
+    const handleRealtimeUpdate = (newPhotosArray) => {
+        console.log("Realtime Update Recebido! A atualizar grelha...");
+        // Atualiza o estado local com o novo array de fotos vindo do Supabase
+        setPhotos(newPhotosArray);
+    };
+    
+    // 3. INICIAR A SUBSCRIÇÃO REALTIME
+    // Passamos a função de callback para que ela seja chamada quando o Supabase notificar
+    const subscription = subscribeToGalleryUpdates(handleRealtimeUpdate);
+    
+    // 4. LIMPEZA
+    // Retorna uma função que remove a subscrição quando o componente é desmontado
+    return () => {
+        if (subscription && subscription.unsubscribe) {
+            // O unsubscribe() é o método correto do Supabase para limpar o canal
+            subscription.unsubscribe();
+        }
+    };
+    
+  }, []); // [] garante que a subscrição é feita apenas uma vez
+
+  // 2. Salvar sempre que 'photos' muda (após upload ou reset) //
   useEffect(() => {
-    // Evita salvar durante o carregamento inicial
+    // Evita salvar durante o carregamento inicial //
     if (isLoading) return; 
 
-    // Garante que o array está no tamanho correto antes de salvar
+    // Garante que o array está no tamanho correto antes de salvar //
     if (photos.length === GRID_SIZE) {
-      saveGalleryState(photos).then(success => {
+      saveGalleryState(photos).then(success => { //
         if (!success) {
            console.error("Erro ao salvar estado no Supabase DB.");
         }
       });
     }
-  }, [photos, isLoading]);
+  }, [photos, isLoading]); //
 
 
   // =========================================================
   // FUNÇÕES DA GALERIA
   // =========================================================
   
-  // A função hideStatusMessage foi removida
+  // A função hideStatusMessage foi removida //
   
-  const allPhotosTaken = photos.every(photo => photo !== null);
+  const allPhotosTaken = photos.every(photo => photo !== null); //
 
   const openCamera = (index) => {
-    if (photos[index]) return; 
-    setCurrentIndex(index);
-    setIsCameraOpen(true);
+    if (photos[index]) return; //
+    setCurrentIndex(index); //
+    setIsCameraOpen(true); //
   };
 
   const handlePhotoAccepted = async (photoData) => { 
-    setIsCameraOpen(false); 
+    setIsCameraOpen(false); //
     // Mensagem de info removida
     
-    const fileName = `foto_${currentIndex + 1}.jpg`;
-    const publicUrl = await uploadPhoto(photoData, fileName); 
+    const fileName = `foto_${currentIndex + 1}.jpg`; //
+    const publicUrl = await uploadPhoto(photoData, fileName); //
     
     if (publicUrl) {
-      const newPhotos = [...photos];
-      newPhotos[currentIndex] = publicUrl; 
-      setPhotos(newPhotos); // Isto dispara o useEffect de save no DB
-      // Mensagem de sucesso removida
+      const newPhotos = [...photos]; //
+      newPhotos[currentIndex] = publicUrl; //
+      
+      // NOTA: A alteração no DB (saveGalleryState) é feita pelo segundo useEffect,
+      // que será disparado por este setPhotos. O Realtime fará o resto.
+      setPhotos(newPhotos); //
+      
     } else {
-      console.error('Falha no upload para o Supabase Storage. Verifique a consola.');
-      // Mensagem de erro removida
+      console.error('Falha no upload para o Supabase Storage. Verifique a consola.'); //
     } 
     
-    setCurrentIndex(null); 
-    // hideStatusMessage() removida
+    setCurrentIndex(null); //
   };
 
   const handleCameraClose = () => {
-    setIsCameraOpen(false);
-    setCurrentIndex(null);
+    setIsCameraOpen(false); //
+    setCurrentIndex(null); //
   };
 
   const handleDownloadGrid = async () => {
     // Mensagem de info removida
-    const gridImage = await captureElementToDataUrl(gridRef.current);
+    const gridImage = await captureElementToDataUrl(gridRef.current); //
     
     if (gridImage) {
-      downloadImage(gridImage, 'galeria_completa.jpg');
-      // Mensagem de sucesso removida
+      downloadImage(gridImage, 'galeria_completa.jpg'); //
     } else {
-      console.error('Erro a criar a imagem da galeria.');
-      // Mensagem de erro removida
+      console.error('Erro a criar a imagem da galeria.'); //
     }
-    // hideStatusMessage() removida
   };
 
   const resetGrid = async () => {
@@ -115,26 +141,23 @@ export default function PhotoGrid() {
     }
 
     // Mensagem de info removida
-    const screenshotData = await captureElementToDataUrl(gridRef.current);
+    const screenshotData = await captureElementToDataUrl(gridRef.current); //
     let publicUrl = null;
 
     if (screenshotData) {
         // Mensagem de info removida
-        const fileName = `reset_backup_${new Date().toISOString()}.jpg`;
-        publicUrl = await uploadPhoto(screenshotData, fileName);
+        const fileName = `reset_backup_${new Date().toISOString()}.jpg`; //
+        publicUrl = await uploadPhoto(screenshotData, fileName); //
     }
 
     if (publicUrl) {
-        console.log('Backup da grelha enviado com sucesso para o Supabase Storage!');
-        // Mensagem de sucesso removida
+        console.log('Backup da grelha enviado com sucesso para o Supabase Storage!'); //
     } else {
-        console.error('Falha ao guardar o backup da grelha. A limpar o ecrã de qualquer forma.');
-        // Mensagem de erro removida
+        console.error('Falha ao guardar o backup da grelha. A limpar o ecrã de qualquer forma.'); //
     }
     
-    // Limpa o estado local e dispara o useEffect de save no DB (guardando um array de nulls)
-    setPhotos(Array(GRID_SIZE).fill(null));
-    // hideStatusMessage() removida
+    // Limpa o estado local e dispara o useEffect de save no DB (guardando um array de nulls) //
+    setPhotos(Array(GRID_SIZE).fill(null)); //
   };
   
   if (isLoading) {
