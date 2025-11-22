@@ -268,11 +268,11 @@
     border-radius: 0;
   }
 
-  /* --- COLUNA 1: SIDEBAR --- */
+  /* --- COLUNA 1: SIDEBAR (OCULTAR) --- */
 
   .col-sidebar {
-    /* Transforma a sidebar numa área de banner estreita no topo */
-    height: 150px;
+    /* 🛑 Remove a sidebar e a foto em ecrãs pequenos */
+    display: none; 
   }
 
   /* --- COLUNA 2: CONTEÚDO --- */
