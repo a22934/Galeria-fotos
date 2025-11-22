@@ -1,0 +1,148 @@
+.camera-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.camera-modal {
+  background: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  max-width: 700px;
+  width: 100%;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.camera-modal-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  text-align: center;
+  color: #1f2937;
+}
+
+.camera-preview {
+  background: black;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  position: relative;
+  width: 100%;
+}
+
+.camera-video,
+.camera-image {
+  width: 100%;
+  display: block;
+  max-height: 500px;
+  object-fit: contain;
+}
+
+.camera-canvas {
+  display: none;
+}
+
+.camera-buttons {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.camera-btn {
+  flex: 1;
+  padding: 0.875rem 1.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.camera-btn-capture {
+  background: #8b5cf6;
+  color: white;
+}
+
+.camera-btn-capture:hover {
+  background: #7c3aed;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+}
+
+.camera-btn-cancel {
+  background: #e5e7eb;
+  color: #374151;
+  flex: 0 0 auto;
+  padding: 0.875rem 1.5rem;
+}
+
+.camera-btn-cancel:hover {
+  background: #d1d5db;
+}
+
+.camera-btn-accept {
+  background: #10b981;
+  color: white;
+}
+
+.camera-btn-accept:hover {
+  background: #059669;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+}
+
+.camera-btn-retake {
+  background: #f97316;
+  color: white;
+}
+
+.camera-btn-retake:hover {
+  background: #ea580c;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+}
+
+@media (max-width: 768px) {
+  .camera-modal {
+    padding: 1rem;
+  }
+
+  .camera-modal-title {
+    font-size: 1.25rem;
+  }
+
+  .camera-buttons {
+    flex-direction: column;
+  }
+
+  .camera-btn-cancel {
+    flex: 1;
+  }
+}

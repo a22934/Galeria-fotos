@@ -1,0 +1,132 @@
+.photo-grid-container {
+  min-height: 100vh;
+  background: #f5f5f5;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center; 
+  padding: 2rem;
+  gap: 0;
+}
+
+/* Banner de Fotos no Topo */
+.top-banner {
+  max-width: 1400px;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  justify-content: flex-end;
+  align-self:auto; 
+}
+
+.banner-photo {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+.layout-wrapper {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 0;
+  max-width: 1400px;
+  width: 100%;
+  background: white;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  align-items: start;
+}
+
+/* Lado Esquerdo - Branding */
+.branding-section {
+  background: #ff8c42;
+  overflow: hidden;
+  position: relative;
+}
+
+.sidebar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Lado Direito - Grade de Fotos */
+.photos-section {
+  padding: 2rem;
+  background: white;
+}
+
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.photo-card {
+  background: white;
+  border: 3px solid #ff8c42;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.photo-card:nth-child(even) {
+  border-color: #ffd93d;
+}
+
+.photo-card.empty:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(255, 140, 66, 0.3);
+}
+
+/* HEADER COM A IMAGEM banner3 */
+.card-header {
+  height: 60px;
+  width: 100%;
+  overflow: hidden;
+  padding: 0;
+}
+
+.header-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  min-height: 150px;
+}
+
+.photo-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photo-placeholder {
+  text-align: center;
+  padding: 1rem;
+}
+
+.placeholder-text {
+  color: #ff6b35;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* Botões de Controlo */
+.control-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
