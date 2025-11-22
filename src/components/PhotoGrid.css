@@ -1,47 +1,37 @@
-.photo-grid-container {
+/* =========================================
+   LAYOUT GERAL DA PÁGINA
+   ========================================= */
+
+.page-container {
   min-height: 100vh;
-  background: #f5f5f5;
+  background-color: #f5f5f5;
   display: flex;
-  flex-direction: column;
   justify-content: center;
-  align-items: center; 
+  align-items: flex-start;
   padding: 2rem;
-  gap: 0;
 }
 
-/* Banner de Fotos no Topo */
-.top-banner {
-  max-width: 1400px;
-  width: 100%;
-  overflow: hidden;
-  display: flex;
-  justify-content: flex-end;
-  align-self:auto; 
-}
-
-.banner-photo {
-  width: 100%;
-  height: auto;
-  display: block;
-  object-fit: cover;
-}
-
-.layout-wrapper {
+/* Container Principal (Grid de 2 Colunas) */
+.tabular-layout {
   display: grid;
   grid-template-columns: 300px 1fr;
-  gap: 0;
   max-width: 1400px;
   width: 100%;
   background: white;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  align-items: start;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  border-radius: 4px; 
+  overflow: hidden;
 }
 
-/* Lado Esquerdo - Branding */
-.branding-section {
-  background: #ff8c42;
-  overflow: hidden;
+/* =========================================
+   COLUNA 1: SIDEBAR (LADO ESQUERDO)
+   ========================================= */
+
+.col-sidebar {
+  background-color: #ff8c42;
   position: relative;
+  display: flex;
+  align-items: stretch;
 }
 
 .sidebar-image {
@@ -51,82 +41,209 @@
   display: block;
 }
 
-/* Lado Direito - Grade de Fotos */
-.photos-section {
-  padding: 2rem;
-  background: white;
-}
+/* =========================================
+   COLUNA 2: CONTEÚDO (LADO DIREITO)
+   ========================================= */
 
-.photo-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-.photo-card {
-  background: white;
-  border: 3px solid #ff8c42;
-  border-radius: 0.5rem;
-  overflow: hidden;
-  cursor: pointer;
-  transition: all 0.3s ease;
+.col-content {
   display: flex;
   flex-direction: column;
+  background: white;
 }
 
-.photo-card:nth-child(even) {
-  border-color: #ffd93d;
-}
-
-.photo-card.empty:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(255, 140, 66, 0.3);
-}
-
-/* HEADER COM A IMAGEM banner3 */
-.card-header {
-  height: 60px;
+/* --- Linha 1: Banner do Topo --- */
+.content-header-row {
   width: 100%;
-  overflow: hidden;
-  padding: 0;
+  border-bottom: 4px solid #ff8c42;
+  line-height: 0;
 }
 
-.header-photo {
+.banner-photo {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* --- Linha 2: Área da Tabela de Fotos --- */
+.content-grid-row {
+  background-color: #fff;
+}
+
+/* A "Tabela" (Container dos cartões) */
+.photo-table {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  width: 100%;
+  
+  /* Espaçamento entre cartões e padding exterior */
+  gap: 15px; 
+  padding: 20px; 
+  
+  box-sizing: border-box;
+}
+
+/* =========================================
+   ESTILO DO CARTÃO (CÉLULA)
+   ========================================= */
+
+.table-cell {
+  background: white;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  /* Design de "Cartão" */
+  border: 1px solid #eee;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  overflow: hidden;
+  position: relative;
+}
+
+/* Efeitos Hover (Ao passar o rato no cartão) */
+.table-cell:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.12);
+  border-color: #ff8c42;
+}
+
+/* --- Header Interno da Célula (Banner 3) --- */
+.cell-header {
+  width: 100%;
+  height: 45px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.cell-header-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 
-.card-content {
-  flex: 1;
+/* --- Conteúdo Interno (Foto ou Placeholder) --- */
+.cell-content {
+  height: 150px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: white;
-  min-height: 150px;
+  background: #fff;
+  overflow: hidden;
 }
 
-.photo-image {
+.cell-photo {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.photo-placeholder {
-  text-align: center;
-  padding: 1rem;
+/* --- Placeholder com Animação (Cross-fade) --- */
+
+.cell-placeholder {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
+/* Estilos partilhados para Texto e Ícone */
+.placeholder-text, 
+.plus-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+/* 1. O Texto "É a tua vez!" (Estado Inicial) */
 .placeholder-text {
-  color: #ff6b35;
-  font-weight: 600;
   font-size: 0.9rem;
+  font-weight: 600;
+  color: #ff6b35;
+  text-align: center;
+  width: 100%;
+  
+  /* Visível por defeito */
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
 }
 
-/* Botões de Controlo */
-.control-buttons {
+/* 2. O Ícone "+" (Estado Inicial) */
+.plus-icon {
+  font-size: 3rem;
+  font-weight: 300;
+  color: #ff8c42;
+  
+  /* Invisível por defeito */
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.5) rotate(-90deg);
+}
+
+/* --- ANIMAÇÃO AO PASSAR O RATO --- */
+
+/* O Texto desaparece */
+.table-cell:hover .placeholder-text {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.8);
+}
+
+/* O Ícone aparece */
+.table-cell:hover .plus-icon {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1) rotate(0deg);
+}
+
+/* =========================================
+   RODAPÉ E BOTÕES
+   ========================================= */
+
+.table-footer-controls {
+  padding: 1rem 2rem 2rem 2rem;
   display: flex;
   justify-content: center;
   gap: 1rem;
+  background: white;
+  border-top: 1px solid #f0f0f0;
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+
+.btn-download {
+  background-color: #ff8c42;
+  color: white;
+  box-shadow: 0 4px 6px rgba(255, 140, 66, 0.2);
+}
+
+.btn-download:hover {
+  background-color: #e67e3b;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 8px rgba(255, 140, 66, 0.3);
+}
+
+.btn-reset {
+  background-color: #f0f0f0;
+  color: #555;
+}
+
+.btn-reset:hover {
+  background-color: #e0e0e0;
+  color: #333;
 }

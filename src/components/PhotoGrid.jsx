@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Camera, RotateCcw, Download } from 'lucide-react';
+import { RotateCcw, Download } from 'lucide-react';
 import CameraModal from './CameraModal';
 import { downloadImage, captureGridImage } from '../utils/imageUtils';
 import './PhotoGrid.css';
@@ -10,14 +10,17 @@ export default function PhotoGrid() {
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const gridRef = useRef(null);
 
+  // Verifica se todas as células têm fotos
   const allPhotosTaken = photos.every(photo => photo !== null);
 
+  // Abre a câmara para a célula selecionada
   const openCamera = (index) => {
     if (photos[index]) return;
     setCurrentIndex(index);
     setIsCameraOpen(true);
   };
 
+  // Manipula a foto aceite pela câmara
   const handlePhotoAccepted = (photoData) => {
     const newPhotos = [...photos];
     newPhotos[currentIndex] = photoData;
@@ -27,11 +30,13 @@ export default function PhotoGrid() {
     downloadImage(photoData, `foto_${currentIndex + 1}.jpg`);
   };
 
+  // Fecha a câmara sem tirar foto
   const handleCameraClose = () => {
     setIsCameraOpen(false);
     setCurrentIndex(null);
   };
 
+  // Captura e faz download da grelha completa
   const handleDownloadGrid = async () => {
     const gridImage = await captureGridImage(photos, 5);
     if (gridImage) {
@@ -39,6 +44,7 @@ export default function PhotoGrid() {
     }
   };
 
+  // Reseta a grelha de fotos
   const resetGrid = () => {
     if (window.confirm('Tens a certeza que queres apagar todas as fotos?')) {
       setPhotos(Array(15).fill(null));
@@ -46,65 +52,75 @@ export default function PhotoGrid() {
   };
 
   return (
-    <div className="photo-grid-container">
-      {/* Banner de Fotos no Topo */}
-      <div className="top-banner">
-        <img src="/images/banner.png" alt="Equipa" className="banner-photo" />
-      </div>
-
-      <div className="layout-wrapper" ref={gridRef}>
-        {/* Lado Esquerdo - Branding */}
-        <div className="branding-section">
-          <img src="/images/sidebar.png" alt="Ccádentro - Iniciativas em Loja" className="sidebar-image" />
+    <div className="page-container">
+      
+      {/* Estrutura de tabela */}
+      <div className="tabular-layout" ref={gridRef}>
+        
+        {/* Lado Esquerdo: Sidebar */}
+        <div className="col-sidebar">
+          <img src="/images/sidebar.png" alt="Ccádentro" className="sidebar-image" />
         </div>
 
-        {/* Lado Direito - Grade de Fotos */}
-        <div className="photos-section">
-          <div className="photo-grid">
-            {photos.map((photo, index) => (
-              <div
-                key={index}
-                className={`photo-card ${!photo ? 'empty' : ''}`}
-                onClick={() => openCamera(index)}
-              >
-                <div className="card-header">
-                  <img
-                    src="/images/banner3.png"
-                    alt="Header"
-                    className="header-photo"
-                  />
-                </div>
-                
-                <div className="card-content">
-                  {photo ? (
-                    <img 
-                      src={photo} 
-                      alt={`Foto ${index + 1}`}
-                      className="photo-image"
-                    />
-                  ) : (
-                    <div className="photo-placeholder">
-                      <p className="placeholder-text">É a tua vez!</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
+        {/* Lado Direito: Banner + Tabela de Fotos */}
+        <div className="col-content">
+          
+          {/* Banner do Topo */}
+          <div className="content-header-row">
+            <img src="/images/banner.png" alt="Equipa" className="banner-photo" />
           </div>
 
-          {/* Botões de Controlo */}
-          {allPhotosTaken && (
-            <div className="control-buttons">
-              <button onClick={handleDownloadGrid} className="btn btn-download">
-                <Download size={20} />
-                Guardar Galeria
-              </button>
-              <button onClick={resetGrid} className="btn btn-reset">
-                <RotateCcw size={20} />
-                Reset
-              </button>
+          {/* Grelha de tabela */}
+          <div className="content-grid-row">
+            <div className="photo-table">
+              {photos.map((photo, index) => (
+                <div
+                  key={index}
+                  className={`table-cell ${!photo ? 'empty' : 'filled'}`}
+                  onClick={() => openCamera(index)}
+                >
+                  {/* Cabeçalho da Célula (Banner 3) */}
+                  <div className="cell-header">
+                    <img
+                      src="/images/banner3.png"
+                      alt="Header"
+                      className="cell-header-img"
+                    />
+                  </div>
+                  
+                  {/* Conteúdo da Célula (Foto ou Placeholder com Animação) */}
+                  <div className="cell-content">
+                    {photo ? (
+                      <img 
+                        src={photo} 
+                        alt={`Foto ${index + 1}`}
+                        className="cell-photo"
+                      />
+                    ) : (
+                      <div className="cell-placeholder">
+                        <span className="placeholder-text">É a tua vez!</span>
+                        <span className="plus-icon">+</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
-          )}
+
+            {/* Botões de Controlo (Rodapé da tabela) */}
+            {allPhotosTaken && (
+              <div className="table-footer-controls">
+                <button onClick={handleDownloadGrid} className="btn btn-download">
+                  <Download size={20} />
+                  Guardar Galeria
+                </button>
+                <button onClick={resetGrid} className="btn btn-reset">
+                  <RotateCcw size={20} />
+                  Reset
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
