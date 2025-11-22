@@ -54,6 +54,23 @@
   margin-bottom: 1rem;
   position: relative;
   width: 100%;
+  min-height: 300px; /* Garante que há espaço para o placeholder */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.camera-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    text-align: center;
+    padding: 20px;
+    font-size: 1rem;
 }
 
 .camera-video,
@@ -71,10 +88,20 @@
 .camera-buttons {
   display: flex;
   gap: 0.75rem;
+  flex-wrap: wrap; /* Permite que os botões quebrem a linha no mobile */
+}
+
+/* Esconder o input file nativo */
+.file-input-hidden {
+    display: none;
 }
 
 .camera-btn {
   flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
   padding: 0.875rem 1.5rem;
   border: none;
   border-radius: 0.5rem;
@@ -96,10 +123,21 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
 }
 
+.camera-btn-upload {
+  background: #ff8c42; /* Laranja da vossa cor */
+  color: white;
+}
+
+.camera-btn-upload:hover {
+  background: #e67e3b;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+}
+
 .camera-btn-cancel {
   background: #e5e7eb;
   color: #374151;
-  flex: 0 0 auto;
+  /* flex: 0 0 auto; */
   padding: 0.875rem 1.5rem;
 }
 
