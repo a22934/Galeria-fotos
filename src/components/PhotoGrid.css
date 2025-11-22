@@ -247,3 +247,63 @@
   background-color: #e0e0e0;
   color: #333;
 }
+/* =========================================
+   MEDIA QUERIES PARA MOBILE/TABLET (MAX-WIDTH: 768PX)
+   ========================================= */
+
+@media (max-width: 768px) {
+  /* --- LAYOUT PRINCIPAL (Ajuste da Sidebar e Conteúdo) --- */
+
+  .page-container {
+    padding: 0; /* Remove padding para ocupar todo o ecrã */
+    align-items: flex-start;
+  }
+
+  .tabular-layout {
+    /* Passa de 2 colunas fixas para uma única coluna (empilhando) */
+    grid-template-columns: 1fr;
+    max-width: 100%;
+    box-shadow: none; /* Remove a sombra no mobile para um look mais limpo */
+    border-radius: 0;
+  }
+
+  /* --- COLUNA 1: SIDEBAR --- */
+
+  .col-sidebar {
+    /* Transforma a sidebar numa área de banner estreita no topo */
+    height: 150px;
+  }
+
+  /* --- COLUNA 2: CONTEÚDO --- */
+
+  /* A grade de fotos: Passa de 5 colunas para 2 colunas */
+  .photo-table {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding: 10px;
+  }
+
+  /* Ajuste no Cartão (Célula) */
+  .cell-content {
+    /* Altura ligeiramente reduzida para caber melhor no ecrã */
+    height: 120px; 
+  }
+
+  .cell-header {
+    height: 35px; /* Reduz a altura do header interno */
+  }
+
+  /* --- RODAPÉ E BOTÕES --- */
+
+  .table-footer-controls {
+    /* Empilha os botões (Download e Reset) em coluna */
+    flex-direction: column;
+    padding: 1rem;
+    gap: 0.75rem;
+  }
+
+  .btn {
+    width: 100%; /* Botões com largura total */
+    justify-content: center;
+  }
+}
