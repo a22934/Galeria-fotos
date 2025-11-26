@@ -177,9 +177,10 @@ export default function PhotoGrid() {
       <div className="tabular-layout" ref={gridRef}>
         
         {/* Lado Esquerdo: Sidebar */}
-        <div className="col-sidebar">
-          <img src="/images/sidebar.png" alt="Ccádentro" className="sidebar-image" />
-        </div>
+       <div className="col-sidebar">
+  <img src="/images/sidebar.png" alt="Cádentro" className="sidebar-image" />
+</div>
+
 
         {/* Lado Direito: Banner + Tabela de Fotos */}
         <div className="col-content">

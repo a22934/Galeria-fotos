@@ -14,32 +14,39 @@
 /* Container Principal (Grid de 2 Colunas) */
 .tabular-layout {
   display: grid;
-  grid-template-columns: 300px 1fr;
+  grid-template-columns: auto 1fr;   /* A imagem controla a largura da sidebar */
   max-width: 1400px;
   width: 100%;
   background: white;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  border-radius: 4px; 
+  border-radius: 4px;
   overflow: hidden;
 }
+
 
 /* =========================================
    COLUNA 1: SIDEBAR (LADO ESQUERDO)
    ========================================= */
 
+
+/* Sidebar que mostra a imagem completa SEM cortar e SEM bordas */
 .col-sidebar {
-  background-color: #ff8c42;
-  position: relative;
-  display: flex;
-  align-items: stretch;
+  background-image: url('/images/sidebar.png');
+  background-repeat: no-repeat;
+  background-position: center top;
+  background-size: contain;     /* mostra TUDO, sem cortar */
+  width: auto;                  /* largura RELATIVA à imagem */
 }
 
 .sidebar-image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain; /* imagem inteira, sem cortar */
+  object-position: center;
   display: block;
+  background-color: #ff8c42; /* substitui a borda branca */
 }
+
 
 /* =========================================
    COLUNA 2: CONTEÚDO (LADO DIREITO)
@@ -74,11 +81,8 @@
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   width: 100%;
-  
-  /* Espaçamento entre cartões e padding exterior */
-  gap: 15px; 
-  padding: 20px; 
-  
+  gap: 15px;
+  padding: 20px;
   box-sizing: border-box;
 }
 
@@ -92,8 +96,6 @@
   flex-direction: column;
   cursor: pointer;
   transition: all 0.3s ease;
-  
-  /* Design de "Cartão" */
   border: 1px solid #eee;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
@@ -101,26 +103,27 @@
   position: relative;
 }
 
-/* Efeitos Hover (Ao passar o rato no cartão) */
 .table-cell:hover {
   transform: translateY(-4px);
   box-shadow: 0 10px 20px rgba(0,0,0,0.12);
   border-color: #ff8c42;
 }
 
-/* --- Header Interno da Célula (Banner 3) --- */
+/* --- Header Interno da Célula (Banner 3) — CORRIGIDO --- */
 .cell-header {
   width: 100%;
-  height: 45px;
   border-bottom: 1px solid #f0f0f0;
+  overflow: hidden;
 }
+
 
 .cell-header-img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
+  object-fit: contain;     /* imagem inteira */
   display: block;
 }
+
 
 /* --- Conteúdo Interno (Foto ou Placeholder) --- */
 .cell-content {
@@ -130,6 +133,9 @@
   justify-content: center;
   background: #fff;
   overflow: hidden;
+  /* Borda amarela ao contentor do placeholder/imagem */
+  border: 4px solid #FFD700; /* Borda mantida, pode ajustar a cor */
+  box-sizing: border-box; 
 }
 
 .cell-photo {
@@ -144,31 +150,30 @@
   width: 100%;
   height: 100%;
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: flex; /* Garante que o conteúdo interno é flexível */
+  align-items: center; /* Centraliza verticalmente o texto */
+  justify-content: center; /* Centraliza horizontalmente o texto */
 }
 
 /* Estilos partilhados para Texto e Ícone */
 .placeholder-text, 
 .plus-icon {
-  position: absolute;
+  position: absolute; /* Para que a animação funcione, mas com flexbox no pai, é secundário para centrar */
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%); /* Essencial para a centralização com position: absolute */
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: none;
 }
 
-/* 1. O Texto "É a tua vez!" (Estado Inicial) */
+/* 1. O Texto "É a tua vez!" (Estado Inicial) - MODIFICADO */
 .placeholder-text {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #ff6b35;
+  font-size: 1.5rem; /* Tamanho de fonte mais adequado */
+  font-weight: 700; /* Negrito, mas não excessivo */
+  color: #f74302; /* A cor original ou uma próxima ao laranja */
   text-align: center;
-  width: 100%;
+  width: 100%; /* Garante que o texto ocupa a largura para text-align: center */
   
-  /* Visível por defeito */
   opacity: 1;
   transform: translate(-50%, -50%) scale(1);
 }
@@ -179,20 +184,19 @@
   font-weight: 300;
   color: #ff8c42;
   
-  /* Invisível por defeito */
   opacity: 0;
+  transform: translate(-50%, -50%) scale(0.5) rotate(-90deg);
+
+ opacity: 0;
   transform: translate(-50%, -50%) scale(0.5) rotate(-90deg);
 }
 
-/* --- ANIMAÇÃO AO PASSAR O RATO --- */
-
-/* O Texto desaparece */
+/* Hover effects */
 .table-cell:hover .placeholder-text {
   opacity: 0;
   transform: translate(-50%, -50%) scale(0.8);
 }
 
-/* O Ícone aparece */
 .table-cell:hover .plus-icon {
   opacity: 1;
   transform: translate(-50%, -50%) scale(1) rotate(0deg);
@@ -249,62 +253,49 @@
 }
 
 /* =========================================
-   MEDIA QUERIES PARA MOBILE/TABLET (MAX-WIDTH: 768PX)
+   MEDIA QUERIES PARA MOBILE/TABLET
    ========================================= */
 
 @media (max-width: 768px) {
-  /* --- LAYOUT PRINCIPAL (Ajuste da Sidebar e Conteúdo) --- */
 
   .page-container {
-    padding: 0; /* Remove padding para ocupar todo o ecrã */
+    padding: 0;
     align-items: flex-start;
   }
 
   .tabular-layout {
-    /* Passa de 2 colunas fixas para uma única coluna (empilhando) */
     grid-template-columns: 1fr;
     max-width: 100%;
-    box-shadow: none; /* Remove a sombra no mobile para um look mais limpo */
+    box-shadow: none;
     border-radius: 0;
   }
 
-  /* --- COLUNA 1: SIDEBAR (OCULTAR) --- */
-
   .col-sidebar {
-    /* 🛑 Remove a sidebar e a foto em ecrãs pequenos */
-    display: none; 
+    display: none;
   }
 
-  /* --- COLUNA 2: CONTEÚDO --- */
-
-  /* A grade de fotos: Passa de 5 colunas para 2 colunas */
   .photo-table {
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
     padding: 10px;
   }
 
-  /* Ajuste no Cartão (Célula) */
   .cell-content {
-    /* Altura ligeiramente reduzida para caber melhor no ecrã */
-    height: 120px; 
+    height: 120px;
   }
 
   .cell-header {
-    height: 35px; /* Reduz a altura do header interno */
+    height: 35px; /* Mantém adaptação no mobile */
   }
 
-  /* --- RODAPÉ E BOTÕES --- */
-
   .table-footer-controls {
-    /* Empilha os botões (Download e Reset) em coluna */
     flex-direction: column;
     padding: 1rem;
     gap: 0.75rem;
   }
 
   .btn {
-    width: 100%; /* Botões com largura total */
+    width: 100%;
     justify-content: center;
   }
 }
