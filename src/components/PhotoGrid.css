@@ -58,17 +58,33 @@
   background: white;
 }
 
-/* --- Linha 1: Banner do Topo --- */
+/* --- Linha 1: Banner do Topo (CORRIGIDO PARA VISIBILIDADE TOTAL) --- */
 .content-header-row {
   width: 100%;
   border-bottom: 4px solid #ff8c42;
   line-height: 0;
+  
+  /* Garantir que o contentor tem uma altura definida para o object-fit funcionar */
+  height: 150px; 
+  
+  /* Centralizar o conteúdo (imagem) */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  background-color: #f0f0f0; 
+  overflow: hidden;
 }
 
 .banner-photo {
   width: 100%;
-  height: auto;
+  height: 100%;
   display: block;
+  
+  /* A CORREÇÃO PRINCIPAL: Garante que a imagem está totalmente visível, sem cortar */
+  object-fit: contain; 
+  max-width: 100%;
+  max-height: 100%;
 }
 
 /* --- Linha 2: Área da Tabela de Fotos --- */
@@ -109,7 +125,7 @@
   border-color: #ff8c42;
 }
 
-/* --- Header Interno da Célula (Banner 3) — CORRIGIDO --- */
+/* --- Header Interno da Célula (Banner 3) --- */
 .cell-header {
   width: 100%;
   border-bottom: 1px solid #f0f0f0;
@@ -120,7 +136,7 @@
 .cell-header-img {
   width: 100%;
   height: auto;
-  object-fit: contain;     /* imagem inteira */
+  object-fit: contain;
   display: block;
 }
 
@@ -133,8 +149,8 @@
   justify-content: center;
   background: #fff;
   overflow: hidden;
-  /* Borda amarela ao contentor do placeholder/imagem */
-  border: 4px solid #FFD700; /* Borda mantida, pode ajustar a cor */
+  /* ADICIONADO: Borda amarela ao contentor do placeholder/imagem */
+  border: 4px solid #FFD700; 
   box-sizing: border-box; 
 }
 
@@ -158,21 +174,21 @@
 /* Estilos partilhados para Texto e Ícone */
 .placeholder-text, 
 .plus-icon {
-  position: absolute; /* Para que a animação funcione, mas com flexbox no pai, é secundário para centrar */
+  position: absolute; 
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%); /* Essencial para a centralização com position: absolute */
+  transform: translate(-50%, -50%); 
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: none;
 }
 
-/* 1. O Texto "É a tua vez!" (Estado Inicial) - MODIFICADO */
+/* 1. O Texto "É a tua vez!" (Estado Inicial) - ESTILOS FINAIS */
 .placeholder-text {
-  font-size: 1.5rem; /* Tamanho de fonte mais adequado */
-  font-weight: 700; /* Negrito, mas não excessivo */
-  color: #f74302; /* A cor original ou uma próxima ao laranja */
+  font-size: 1.5rem; /* Tamanho de fonte ajustado */
+  font-weight: 700; /* Mais negrito */
+  color: #f74302; /* Cor ajustada */
   text-align: center;
-  width: 100%; /* Garante que o texto ocupa a largura para text-align: center */
+  width: 100%;
   
   opacity: 1;
   transform: translate(-50%, -50%) scale(1);
@@ -185,9 +201,6 @@
   color: #ff8c42;
   
   opacity: 0;
-  transform: translate(-50%, -50%) scale(0.5) rotate(-90deg);
-
- opacity: 0;
   transform: translate(-50%, -50%) scale(0.5) rotate(-90deg);
 }
 
@@ -273,6 +286,10 @@
   .col-sidebar {
     display: none;
   }
+  
+  .content-header-row {
+    height: 80px; /* Altura reduzida para mobile */
+  }
 
   .photo-table {
     grid-template-columns: repeat(2, 1fr);
@@ -285,7 +302,7 @@
   }
 
   .cell-header {
-    height: 35px; /* Mantém adaptação no mobile */
+    height: 35px;
   }
 
   .table-footer-controls {

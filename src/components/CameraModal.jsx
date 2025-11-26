@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Camera, Upload, RotateCcw, Check, X } from 'lucide-react';
-import './CameraModal.css'; // Não se esqueça de manter ou criar o seu arquivo CSS
+import './CameraModal.css'; 
 
 export default function CameraModal({ onPhotoAccepted, onClose }) {
   const [capturedPhoto, setCapturedPhoto] = useState(null);
@@ -44,21 +44,17 @@ export default function CameraModal({ onPhotoAccepted, onClose }) {
         videoRef.current.srcObject = mediaStream;
         
         // Tentar reproduzir e lidar com a Promise para catch de falhas de autoplay
-        // O `await` aqui garante que a promessa seja resolvida/rejeitada
         const playPromise = videoRef.current.play();
         
         if (playPromise !== undefined) {
           playPromise.catch(error => {
-            // Isto acontece se o autoplay falhar (ex: problemas de permissão silenciosa/interação)
             console.error('Falha na reprodução automática da câmara:', error);
-            // Neste caso, a câmara está disponível (isCameraAvailable=true), mas o ecrã pode ficar preto 
-            // até que o utilizador interaja (ex: clique no botão "Tirar Foto").
           });
         }
       }
     } catch (err) {
       console.error('Erro ao aceder à câmara:', err);
-      // Se a câmara falhar, atualiza os estados para mostrar a mensagem de erro no placeholder
+      // Se a câmara falhar, atualiza os estados para mostrar a mensagem de erro
       setIsCameraAvailable(false); 
       setStream(null);
     }
@@ -69,12 +65,11 @@ export default function CameraModal({ onPhotoAccepted, onClose }) {
   // ===============================================
   useEffect(() => {
     if (!capturedPhoto) {
-      // Inicia a câmara apenas se não houver foto capturada
       startCamera();
     }
     // Cleanup function: parar a câmara ao fechar o modal ou desmontar
     return () => stopCamera();
-  }, [capturedPhoto]); // Dependência em capturedPhoto para reiniciar a câmara se for 'null'
+  }, [capturedPhoto]); 
 
   // ===============================================
   // Upload de arquivo
@@ -104,12 +99,10 @@ export default function CameraModal({ onPhotoAccepted, onClose }) {
     if (!videoRef.current || !canvasRef.current) return;
 
     const canvas = canvasRef.current;
-    // Definir o tamanho do canvas para corresponder ao vídeo
     canvas.width = videoRef.current.videoWidth;
     canvas.height = videoRef.current.videoHeight;
 
     const ctx = canvas.getContext('2d');
-    // Desenhar o frame atual do vídeo no canvas
     ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
 
     const photoData = canvas.toDataURL('image/jpeg', 0.95);
@@ -119,7 +112,7 @@ export default function CameraModal({ onPhotoAccepted, onClose }) {
 
   const retakePhoto = () => {
     setCapturedPhoto(null);
-    // O useEffect irá chamar startCamera() porque capturedPhoto mudou para null
+    // O useEffect irá chamar startCamera()
   };
 
   const acceptPhoto = () => {
@@ -152,7 +145,7 @@ export default function CameraModal({ onPhotoAccepted, onClose }) {
               autoPlay
               playsInline
               className="camera-video"
-              muted // Essencial para Autoplay em muitos navegadores
+              muted 
             />
           ) : capturedPhoto ? (
             /* Visualização da Foto Capturada/Carregada */
